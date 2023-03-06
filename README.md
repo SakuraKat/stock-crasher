@@ -4,5 +4,5 @@ edit the config.py file to have stock symbols or whatever its called and then ru
 
 ```bash
 pip install -r requirements.txt
-python3 main.py
+python main.py
 ```
