@@ -9,3 +9,9 @@ title="vrc-osc-scripts"
 author="CyberKitsune"
 date="Dec 12, 2022"
 link="https://github.com/cyberkitsune/vrc-osc-scripts/blob/43260874d45910cd4959a190a60ce3afc5572b17/VRCNowPlaying/vrcnowplaying.py"
+
+[Yahoo_Fin_Graph.py]
+title="Python: How to Get Live Market Data (Less Than 0.1-Second Lag)."
+author="Sajid Lhessani"
+date="Oct 26, 2020"
+link="https://towardsdatascience.com/python-how-to-get-live-market-data-less-than-0-1-second-lag-c85ee280ed93"
