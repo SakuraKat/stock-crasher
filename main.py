@@ -50,7 +50,6 @@ def update_tickers_data(tickers_list):
 if __name__ == '__main__':
     tickers_list = config.tickers
 
-
     client = udp_client.SimpleUDPClient("127.0.0.1", 9000)
 
     while True:
