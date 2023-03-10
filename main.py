@@ -6,38 +6,42 @@ import yfinance as yf
 from pandas import DataFrame
 from pythonosc import udp_client
 from pythonosc.udp_client import SimpleUDPClient
+from yfinance import Ticker
 
 import config
 import zaphkiel
 
+yf.set_tz_cache_location("tz-cache")
+
+_TICKERS: dict = dict()
 _PREVIOUS_DATA: dict = dict()
 _CURRENT_DATA: dict = dict()
 _SEND_QUEUE: list[str] = []
 _SUMMARY_SEND_QUEUE: list[str] = []
 
 
-def get_stocks_data(tickers_list: str) -> DataFrame:
+def get_stocks_data(ticker: Ticker) -> DataFrame:
     timeout: int = config.timeout
-    return yf.download(tickers=tickers_list, period='1d', interval='1m', progress=False, timeout=timeout)
+    return ticker.history(period='1d', interval='1m', timeout=timeout)
 
 
 def initialize_previous_data(tickers_list: list[str]) -> None:
-    for idx, ticker in enumerate(tickers_list):
+    for idx, ticker_symbol in enumerate(tickers_list):
         if debug_mode:
-            print(f'initializing previous data for {ticker}')
-        data: DataFrame = get_stocks_data(ticker)
+            print(f'initializing previous data for {ticker_symbol}')
+        data: DataFrame = get_stocks_data(_TICKERS[ticker_symbol])
         try:
             data_open: float = data['Open'][1]
         except IndexError:
             if debug_mode:
-                print(f'no data for {ticker}')
+                print(f'no data for {ticker_symbol}')
             continue
 
-        _PREVIOUS_DATA[ticker] = {
+        _PREVIOUS_DATA[ticker_symbol] = {
             'open': data_open,
         }
         if debug_mode:
-            print(f'previous data for {ticker}: {_PREVIOUS_DATA[ticker]}')
+            print(f'previous data for {ticker_symbol}: {_PREVIOUS_DATA[ticker_symbol]}')
 
 
 def update_tickers_data(tickers_list: list[str]) -> None:
@@ -52,76 +56,79 @@ def update_tickers_data(tickers_list: list[str]) -> None:
         print(f'updates only mode: {updates_only_mode}')
         print(f'precision: {precision}')
 
-    for idx, ticker in enumerate(tickers_list):
-        data: DataFrame = get_stocks_data(ticker)
+    for idx, ticker_symbol in enumerate(tickers_list):
+        data: DataFrame = get_stocks_data(_TICKERS[ticker_symbol])
         try:
             data_open: float = data['Open'][1]
         except IndexError:
             if debug_mode:
-                print(f'no data for {ticker}')
+                print(f'no data for {ticker_symbol}')
             continue
 
-        _CURRENT_DATA[ticker] = {
+        _CURRENT_DATA[ticker_symbol] = {
             'open': data_open,
         }
         if debug_mode:
-            print(f'current data for {ticker}: {_CURRENT_DATA[ticker]}')
+            print(f'current data for {ticker_symbol}: {_CURRENT_DATA[ticker_symbol]}')
 
         unit: str = '$'
-        price: str = str(zaphkiel.round_number(_CURRENT_DATA[ticker]['open'], precision))
-        change: float = _CURRENT_DATA[ticker]['open'] - _PREVIOUS_DATA[ticker]['open']
+        price: str = str(zaphkiel.round_number(_CURRENT_DATA[ticker_symbol]['open'], precision))
+        change: float = _CURRENT_DATA[ticker_symbol]['open'] - _PREVIOUS_DATA[ticker_symbol]['open']
         change: str = str(zaphkiel.round_number(change, precision))
 
-        if _CURRENT_DATA[ticker]['open'] > _PREVIOUS_DATA[ticker]['open']:
+        if _CURRENT_DATA[ticker_symbol]['open'] > _PREVIOUS_DATA[ticker_symbol]['open']:
             if debug_mode:
-                print(f'{ticker} is up')
+                print(f'{ticker_symbol} is up')
             _SEND_QUEUE.append(
                 Template(config.up_msg)
                 .substitute(
-                    ticker=ticker,
+                    ticker=ticker_symbol,
                     unit=unit,
                     change=change,
                     price=price,
                 )
             )
-            _SUMMARY_SEND_QUEUE.append(f"⬆️{ticker}⬆️")
+            _SUMMARY_SEND_QUEUE.append(f"⬆️{ticker_symbol}⬆️")
             continue
-        elif _CURRENT_DATA[ticker]['open'] < _PREVIOUS_DATA[ticker]['open']:
+        elif _CURRENT_DATA[ticker_symbol]['open'] < _PREVIOUS_DATA[ticker_symbol]['open']:
             if debug_mode:
-                print(f'{ticker} is down')
+                print(f'{ticker_symbol} is down')
             _SEND_QUEUE.append(
                 Template(config.down_msg)
                 .substitute(
-                    ticker=ticker,
+                    ticker=ticker_symbol,
                     unit=unit,
                     change=change,
                     price=price,
                 )
             )
-            _SUMMARY_SEND_QUEUE.append(f"⬇️{ticker}⬇️")
+            _SUMMARY_SEND_QUEUE.append(f"⬇️{ticker_symbol}⬇️")
             continue
         if debug_mode:
-            print(f'{ticker} is the same')
+            print(f'{ticker_symbol} is the same')
         if not updates_only_mode:
             _SEND_QUEUE.append(
                 Template(config.same_msg)
                 .substitute(
-                    ticker=ticker,
+                    ticker=ticker_symbol,
                     unit=unit,
                     price=price,
                 )
             )
-            _SUMMARY_SEND_QUEUE.append(f"➡️{ticker}➡️")
+            _SUMMARY_SEND_QUEUE.append(f"➡️{ticker_symbol}➡️")
 
 
 if __name__ == '__main__':
     if config.debug_mode:
         print('Debug mode enabled.')
         print("Connecting to VRChat's OSC")
+
     client: SimpleUDPClient = udp_client.SimpleUDPClient("127.0.0.1", 9000)
 
     while True:
         tickers: list[str] = config.tickers
+        for t in tickers:
+            _TICKERS[t] = zaphkiel.get_ticker_obj(t)
         time_between_messages: int = config.time_between_messages
         time_between_updates: int = config.time_between_updates
         debug_mode: bool = config.debug_mode
