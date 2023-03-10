@@ -5,6 +5,12 @@ tickers = [
     'AAPL',
     'MSFT',
     'TSLA',
+    'GME',
+    'AMC',
+    'BBY',
+    'APE',
+    'DKNG',
+    'YOLO',
 ]
 
 # Messages to send when a stock is up, down, or the same

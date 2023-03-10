@@ -1,3 +1,4 @@
+import importlib
 from string import Template
 from time import sleep
 
@@ -90,6 +91,7 @@ if __name__ == '__main__':
     client = udp_client.SimpleUDPClient("127.0.0.1", 9000)
 
     while True:
+        importlib.reload(config)
         tickers: list[str] = config.tickers
         time_between_messages = config.time_between_messages
         time_between_updates = config.time_between_updates
