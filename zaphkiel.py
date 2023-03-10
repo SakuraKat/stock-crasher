@@ -7,5 +7,5 @@ def send_message(client: udp_client.SimpleUDPClient, message: str):
     client.send_message("/chatbox/input", [message, True])
 
 
-def round_number(number, decimal_places):
+def round_number(number: float, decimal_places: int):
     return floor(number * (10 ** decimal_places)) / (10 ** decimal_places)
