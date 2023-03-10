@@ -1,3 +1,4 @@
 /.idea
 /refs
 /testing_shiz/
+*.cache
