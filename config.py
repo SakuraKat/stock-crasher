@@ -1,5 +1,19 @@
 # List of stocks to track
-# Default: ['UBER', 'AAPL', 'MSFT', 'TSLA', 'GME', 'AMC', 'BBY', 'APE', 'DKNG']
+# Default:
+# tickers: list[str] = [
+#     'UBER',
+#     'AAPL',
+#     'MSFT',
+#     'TSLA',
+#     'GME',
+#     'AMC',
+#     'BBY',
+#     'APE',
+#     'DKNG',
+#     'BTC-USD',
+#     'ETH-USD',
+#     'DOGE-USD',
+# ]
 tickers: list[str] = [
     'UBER',
     'AAPL',
@@ -10,6 +24,9 @@ tickers: list[str] = [
     'BBY',
     'APE',
     'DKNG',
+    'BTC-USD',
+    'ETH-USD',
+    'DOGE-USD',
 ]
 
 # Messages to send when a stock is up, down, or the same
@@ -20,9 +37,9 @@ tickers: list[str] = [
 # up_msg = '${ticker} is ⬆️up⬆️ by ${unit}${change} (~${unit}${price}) BUY BUY BUY'
 # down_msg = '${ticker} is ⬇️down⬇️ by ${unit}${change} (~${unit}${price}) SELL SELL SELL'
 # same_msg = '${ticker} is the same (~${unit}${price}) 🛑HOLD🛑 🛑HOLD🛑 🛑HOLD🛑'
-up_msg: str = '${ticker} is ⬆️up⬆️ by ${unit}${change} (~${unit}${price}) BUY BUY BUY'
-down_msg: str = '${ticker} is ⬇️down⬇️ by ${unit}${change} (~${unit}${price}) SELL SELL SELL'
-same_msg: str = '${ticker} is the same (~${unit}${price}) 🛑HOLD🛑 🛑HOLD🛑 🛑HOLD🛑'
+up_msg: str = '${ticker} is ⬆️up⬆️ by ${unit}${change} (~${unit}${price})'
+down_msg: str = '${ticker} is ⬇️down⬇️ by ${unit}${change} (~${unit}${price})'
+same_msg: str = '${ticker} is the same (~${unit}${price})'
 
 # Updates only mode
 # If True, only send updates when a stock changes

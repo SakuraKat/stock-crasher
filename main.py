@@ -16,22 +16,31 @@ _SEND_QUEUE: list[str] = []
 _SUMMARY_SEND_QUEUE: list[str] = []
 
 
-def get_stocks_data(tickers_list: str):
+def get_stocks_data(tickers_list: str) -> DataFrame:
     timeout: int = config.timeout
-    return yf.download(tickers=tickers_list, period='5m', interval='1m', progress=False, timeout=timeout)
+    return yf.download(tickers=tickers_list, period='1d', interval='1m', progress=False, timeout=timeout)
 
 
-def initialize_previous_data(tickers_list: list[str]):
+def initialize_previous_data(tickers_list: list[str]) -> None:
     for idx, ticker in enumerate(tickers_list):
+        if debug_mode:
+            print(f'initializing previous data for {ticker}')
         data: DataFrame = get_stocks_data(ticker)
-        data_open: float = data['Open'][1]
+        try:
+            data_open: float = data['Open'][1]
+        except IndexError:
+            if debug_mode:
+                print(f'no data for {ticker}')
+            continue
 
         _PREVIOUS_DATA[ticker] = {
             'open': data_open,
         }
+        if debug_mode:
+            print(f'previous data for {ticker}: {_PREVIOUS_DATA[ticker]}')
 
 
-def update_tickers_data(tickers_list: list[str]):
+def update_tickers_data(tickers_list: list[str]) -> None:
     if not _PREVIOUS_DATA:
         if debug_mode:
             print('idfk what happened but previous data is empty')
@@ -45,7 +54,12 @@ def update_tickers_data(tickers_list: list[str]):
 
     for idx, ticker in enumerate(tickers_list):
         data: DataFrame = get_stocks_data(ticker)
-        data_open: float = data['Open'][1]
+        try:
+            data_open: float = data['Open'][1]
+        except IndexError:
+            if debug_mode:
+                print(f'no data for {ticker}')
+            continue
 
         _CURRENT_DATA[ticker] = {
             'open': data_open,
