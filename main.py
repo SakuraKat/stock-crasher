@@ -117,7 +117,7 @@ if __name__ == '__main__':
             print(f"Debug mode: {debug_mode}")
 
         if _PREVIOUS_DATA:
-            _PREVIOUS_DATA = _CURRENT_DATA
+            _PREVIOUS_DATA.update(_CURRENT_DATA)
             if debug_mode:
                 print("Previous data updated.")
         else:
