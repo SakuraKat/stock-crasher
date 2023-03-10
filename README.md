@@ -1,6 +1,8 @@
 # stock-crasher
 blame vice
-edit the config.py file to have stock symbols or whatever its called and then run the main file
+
+## Instructions
+edit the config.py file to have stock symbols / tickers 
 
 ## Initial Setup
 ```bash
