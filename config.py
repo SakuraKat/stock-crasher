@@ -61,8 +61,8 @@ time_between_updates: int = 60
 precision: int = 4
 
 # Timeout for requests in seconds
-# Default: 3
-timeout: int = 3
+# Default: 10
+timeout: int = 10
 
 # Debug mode
 # If True, print debug messages
