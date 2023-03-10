@@ -10,7 +10,6 @@ tickers = [
     'BBY',
     'APE',
     'DKNG',
-    'YOLO',
 ]
 
 # Messages to send when a stock is up, down, or the same
@@ -21,11 +20,11 @@ tickers = [
 # up_msg = '${ticker} is ⬆️up⬆️ by ${unit}${change} (~${unit}${price}) BUY BUY BUY'
 # down_msg = '${ticker} is ⬇️down⬇️ by ${unit}${change} (~${unit}${price}) SELL SELL SELL'
 # same_msg = '${ticker} is the same (~${unit}${price}) 🛑HOLD🛑 🛑HOLD🛑 🛑HOLD🛑'
-
 up_msg = '${ticker} is ⬆️up⬆️ by ${unit}${change} (~${unit}${price}) BUY BUY BUY'
 down_msg = '${ticker} is ⬇️down⬇️ by ${unit}${change} (~${unit}${price}) SELL SELL SELL'
 same_msg = '${ticker} is the same (~${unit}${price}) 🛑HOLD🛑 🛑HOLD🛑 🛑HOLD🛑'
 
+# Updates only mode
 # If True, only send updates when a stock changes
 # If False, send updates every time the script runs
 # Default: True
@@ -40,6 +39,16 @@ time_between_messages = 10
 time_between_updates = 60
 
 # Precision of the stock price
-# 0 is show the full price
+# Set it to 0 to show the full price
 # Default: 4
 precision = 4
+
+# Timeout for requests in seconds
+# Default: 3
+timeout = 3
+
+# Debug mode
+# If True, print debug messages
+# If False, don't print debug messages
+# Default: False
+debug_mode = False

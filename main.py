@@ -13,46 +13,53 @@ _CURRENT_DATA: dict = dict()
 _SEND_QUEUE: list = []
 _SUMMARY_SEND_QUEUE: list = []
 
+_TIMEOUT: int = config.timeout
+
 
 def get_stocks_data(tickers_list):
-    return yf.download(tickers=tickers_list, period='5m', interval='1m', progress=False)
+    return yf.download(tickers=tickers_list, period='5m', interval='1m', progress=False, timeout=_TIMEOUT)
 
 
 def initialize_previous_data(tickers_list):
     for idx, ticker in enumerate(tickers_list):
         data = get_stocks_data(ticker)
         data_open: float = data['Open'][1]
-        data_high: float = data['High'][1]
 
         _PREVIOUS_DATA[ticker] = {
             'open': data_open,
-            'high': data_high,
         }
 
 
 def update_tickers_data(tickers_list):
     if not _PREVIOUS_DATA:
+        if debug_mode:
+            print('idfk what happened but previous data is empty')
         return
 
-    _UPDATES_ONLY_MODE: bool = config.updates_only_mode
-    _PRECISION: int = config.precision
+    updates_only_mode: bool = config.updates_only_mode
+    precision: int = config.precision
+    if debug_mode:
+        print(f'updates only mode: {updates_only_mode}')
+        print(f'precision: {precision}')
 
     for idx, ticker in enumerate(tickers_list):
         data = get_stocks_data(ticker)
         data_open: float = data['Open'][1]
-        data_high: float = data['High'][1]
 
         _CURRENT_DATA[ticker] = {
             'open': data_open,
-            'high': data_high,
         }
+        if debug_mode:
+            print(f'current data for {ticker}: {_CURRENT_DATA[ticker]}')
 
         unit = '$'
-        price: str = str(zaphkiel.round_number(_CURRENT_DATA[ticker]['open'], _PRECISION))
+        price: str = str(zaphkiel.round_number(_CURRENT_DATA[ticker]['open'], precision))
         change: float = _CURRENT_DATA[ticker]['open'] - _PREVIOUS_DATA[ticker]['open']
-        change: str = str(zaphkiel.round_number(change, _PRECISION))
+        change: str = str(zaphkiel.round_number(change, precision))
 
         if _CURRENT_DATA[ticker]['open'] > _PREVIOUS_DATA[ticker]['open']:
+            if debug_mode:
+                print(f'{ticker} is up')
             _SEND_QUEUE.append(
                 Template(config.up_msg)
                 .substitute(
@@ -65,6 +72,8 @@ def update_tickers_data(tickers_list):
             _SUMMARY_SEND_QUEUE.append(f"⬆️{ticker}⬆️")
             continue
         elif _CURRENT_DATA[ticker]['open'] < _PREVIOUS_DATA[ticker]['open']:
+            if debug_mode:
+                print(f'{ticker} is down')
             _SEND_QUEUE.append(
                 Template(config.down_msg)
                 .substitute(
@@ -76,7 +85,9 @@ def update_tickers_data(tickers_list):
             )
             _SUMMARY_SEND_QUEUE.append(f"⬇️{ticker}⬇️")
             continue
-        if not _UPDATES_ONLY_MODE:
+        if debug_mode:
+            print(f'{ticker} is the same')
+        if not updates_only_mode:
             _SEND_QUEUE.append(
                 Template(config.same_msg)
                 .substitute(
@@ -88,26 +99,53 @@ def update_tickers_data(tickers_list):
 
 
 if __name__ == '__main__':
+    if config.debug_mode:
+        print('Debug mode enabled.')
+        print("Connecting to VRChat's OSC")
     client = udp_client.SimpleUDPClient("127.0.0.1", 9000)
 
     while True:
-        importlib.reload(config)
         tickers: list[str] = config.tickers
         time_between_messages = config.time_between_messages
         time_between_updates = config.time_between_updates
+        debug_mode = config.debug_mode
+        if debug_mode:
+            print(f"Tickers: {tickers}")
+            print(f"Time between messages: {time_between_messages}")
+            print(f"Time between updates: {time_between_updates}")
+            print(f"Debug mode: {debug_mode}")
 
         if _PREVIOUS_DATA:
             _PREVIOUS_DATA = _CURRENT_DATA
+            if debug_mode:
+                print("Previous data updated.")
         else:
             initialize_previous_data(tickers)
+            if debug_mode:
+                print("Previous data initialized.")
         _CURRENT_DATA = dict()
         _SUMMARY_SEND_QUEUE = []
+        if debug_mode:
+            print("Current data cleared.")
 
         update_tickers_data(tickers)
+        if debug_mode:
+            print("Tickers data updated.")
 
         while _SEND_QUEUE:
+            if debug_mode:
+                print(f"Sending message: {_SEND_QUEUE[0]}")
             zaphkiel.send_message(client, _SEND_QUEUE.pop(0))
+            if debug_mode:
+                print(f"Sleeping for {time_between_messages} seconds...")
             sleep(time_between_messages)
         summary_message = ' '.join(_SUMMARY_SEND_QUEUE)
+        if debug_mode:
+            print(f"Sending summary message: {summary_message}")
         zaphkiel.send_message(client, summary_message)
+
+        if debug_mode:
+            print(f"Sleeping for {time_between_updates} seconds...")
         sleep(time_between_updates)
+
+        importlib.reload(config)
