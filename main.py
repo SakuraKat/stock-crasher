@@ -98,6 +98,7 @@ if __name__ == '__main__':
         else:
             initialize_previous_data(tickers)
         _CURRENT_DATA = dict()
+        _SUMMARY_SEND_QUEUE = []
 
         update_tickers_data(tickers)
 
@@ -105,6 +106,5 @@ if __name__ == '__main__':
             zaphkiel.send_message(client, _SEND_QUEUE.pop(0))
             sleep(time_between_messages)
         summary_message = ' '.join(_SUMMARY_SEND_QUEUE)
-        _SUMMARY_SEND_QUEUE = []
         zaphkiel.send_message(client, summary_message)
         sleep(time_between_updates)
