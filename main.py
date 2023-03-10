@@ -10,6 +10,7 @@ import zaphkiel
 _PREVIOUS_DATA: dict = dict()
 _CURRENT_DATA: dict = dict()
 _SEND_QUEUE: list = []
+_SUMMARY_SEND_QUEUE: list = []
 
 
 def get_stocks_data(tickers_list):
@@ -59,6 +60,7 @@ def update_tickers_data(tickers_list):
                     price=price,
                 )
             )
+            _SUMMARY_SEND_QUEUE.append(f"⬆️{ticker}⬆️")
             continue
         elif _CURRENT_DATA[ticker]['open'] < _PREVIOUS_DATA[ticker]['open']:
             _SEND_QUEUE.append(
@@ -70,6 +72,7 @@ def update_tickers_data(tickers_list):
                     price=price,
                 )
             )
+            _SUMMARY_SEND_QUEUE.append(f"⬇️{ticker}⬇️")
             continue
         if not _UPDATES_ONLY_MODE:
             _SEND_QUEUE.append(
@@ -99,6 +102,8 @@ if __name__ == '__main__':
         update_tickers_data(tickers)
 
         while _SEND_QUEUE:
-            client.send_message("/chatbox/input", [_SEND_QUEUE.pop(), True])
+            zaphkiel.send_message(client, _SEND_QUEUE.pop(0))
             sleep(time_between_messages)
+        summary_message = ' '.join(_SUMMARY_SEND_QUEUE)
+        zaphkiel.send_message(client, summary_message)
         sleep(time_between_updates)
