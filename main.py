@@ -19,8 +19,9 @@ def get_stocks_data(tickers_list):
 
 def initialize_previous_data(tickers_list):
     for idx, ticker in enumerate(tickers_list):
-        data_open = 0
-        data_high = 0
+        data = get_stocks_data(ticker)
+        data_open: float = data['Open'][1]
+        data_high: float = data['High'][1]
 
         _PREVIOUS_DATA[ticker] = {
             'open': data_open,
