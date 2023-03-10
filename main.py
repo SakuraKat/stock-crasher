@@ -73,7 +73,13 @@ def update_tickers_data(tickers_list: list[str]) -> None:
 
         unit: str = '$'
         price: str = str(zaphkiel.round_number(_CURRENT_DATA[ticker_symbol]['open'], precision))
-        change: float = _CURRENT_DATA[ticker_symbol]['open'] - _PREVIOUS_DATA[ticker_symbol]['open']
+        try:
+            change: float = _CURRENT_DATA[ticker_symbol]['open'] - _PREVIOUS_DATA[ticker_symbol]['open']
+        except KeyError:
+            if debug_mode:
+                print(f'no previous data for {ticker_symbol}')
+            _PREVIOUS_DATA[ticker_symbol] = _CURRENT_DATA[ticker_symbol]
+            change: float = 0.0
         change: str = str(zaphkiel.round_number(change, precision))
 
         if _CURRENT_DATA[ticker_symbol]['open'] > _PREVIOUS_DATA[ticker_symbol]['open']:
