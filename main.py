@@ -97,6 +97,7 @@ def update_tickers_data(tickers_list: list[str]):
                     price=price,
                 )
             )
+            _SUMMARY_SEND_QUEUE.append(f"➡️{ticker}➡️")
 
 
 if __name__ == '__main__':
