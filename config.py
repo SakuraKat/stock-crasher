@@ -12,12 +12,12 @@ tickers = [
 # ${unit} is the currency unit
 # ${change} is the change in price
 # Default:
-# up_msg = '${ticker} is 📈up📈 by 📈${unit}${change} (~${unit}${price}) BUY BUY BUY'
-# down_msg = '${ticker} is 📉down📉 by 📉${unit}${change} (~${unit}${price}) SELL SELL SELL'
+# up_msg = '${ticker} is ⬆️up⬆️ by ⬆️${unit}${change} (~${unit}${price}) BUY BUY BUY'
+# down_msg = '${ticker} is ⬇️down⬇️ by ⬇️${unit}${change} (~${unit}${price}) SELL SELL SELL'
 # same_msg = '${ticker} is the same (~${unit}${price}) 🛑HOLD🛑 🛑HOLD🛑 🛑HOLD🛑'
 
-up_msg = '${ticker} is 📈up📈 by 📈${unit}${change} (~${unit}${price}) BUY BUY BUY'
-down_msg = '${ticker} is 📉down📉 by 📉${unit}${change} (~${unit}${price}) SELL SELL SELL'
+up_msg = '${ticker} is ⬆️up⬆️ by ⬆️${unit}${change} (~${unit}${price}) BUY BUY BUY'
+down_msg = '${ticker} is ⬇️down⬇️ by ⬇️${unit}${change} (~${unit}${price}) SELL SELL SELL'
 same_msg = '${ticker} is the same (~${unit}${price}) 🛑HOLD🛑 🛑HOLD🛑 🛑HOLD🛑'
 
 # If True, only send updates when a stock changes
