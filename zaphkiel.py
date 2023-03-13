@@ -43,5 +43,8 @@ def round_number(number: float, decimal_places: int) -> float:
     return floor(number * (10 ** decimal_places)) / (10 ** decimal_places)
 
 
-def get_ticker_obj(ticker_symbol: str) -> Ticker:
-    return Ticker(ticker_symbol, session=get_session())
+def get_ticker_obj(ticker_symbol: str, cached_session: bool) -> Ticker:
+    if cached_session:
+        return Ticker(ticker_symbol, session=get_session())
+    else:
+        return Ticker(ticker_symbol)

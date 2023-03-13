@@ -75,6 +75,10 @@ def update_tickers_data(tickers_list: list[str]) -> None:
         price: str = str(zaphkiel.round_number(_CURRENT_DATA[ticker_symbol]['open'], precision))
         try:
             change: float = _CURRENT_DATA[ticker_symbol]['open'] - _PREVIOUS_DATA[ticker_symbol]['open']
+            if debug_mode:
+                print(f'change for {ticker_symbol}: {change}, '
+                      f'previous data: {_PREVIOUS_DATA[ticker_symbol]}, '
+                      f'current data: {_CURRENT_DATA[ticker_symbol]}')
         except KeyError:
             if debug_mode:
                 print(f'no previous data for {ticker_symbol}')
@@ -134,7 +138,7 @@ if __name__ == '__main__':
     while True:
         tickers: list[str] = config.tickers
         for t in tickers:
-            _TICKERS[t] = zaphkiel.get_ticker_obj(t)
+            _TICKERS[t] = zaphkiel.get_ticker_obj(t, True)
         time_between_messages: int = config.time_between_messages
         time_between_updates: int = config.time_between_updates
         debug_mode: bool = config.debug_mode
@@ -145,7 +149,7 @@ if __name__ == '__main__':
             print(f"Debug mode: {debug_mode}")
 
         if _PREVIOUS_DATA:
-            _PREVIOUS_DATA.update(_CURRENT_DATA)
+            _PREVIOUS_DATA = _CURRENT_DATA
             if debug_mode:
                 print("Previous data updated.")
         else:

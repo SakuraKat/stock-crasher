@@ -58,7 +58,7 @@ time_between_updates: int = 60
 # Precision of the stock price
 # Set it to 0 to show the full price
 # Default: 4
-precision: int = 4
+precision: int = 0
 
 # Timeout for requests in seconds
 # Default: 10
@@ -68,4 +68,4 @@ timeout: int = 10
 # If True, print debug messages
 # If False, don't print debug messages
 # Default: False
-debug_mode: bool = False
+debug_mode: bool = True
